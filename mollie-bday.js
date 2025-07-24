@@ -67,7 +67,7 @@ function gameLoop() {
   }
 
   frameCount++;
-  if (frameCount < 25) {
+  if (frameCount < 50) {
     window.requestAnimationFrame(gameLoop);
     return;
   }
