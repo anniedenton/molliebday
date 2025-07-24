@@ -25,13 +25,20 @@ let mollieRow = 0;
 let mollieBaseIndex = 0;
 let mollieIndex = 0;
 let catMouthOpens = 0;
+let frames_per_second = 25;
+let interval = Math.floor(10000 / frames_per_second);
+let startTime = performance.now();
+let previousTime = startTime;
+let currentTime = 0;
+let deltaTime = 0;
 let catImg = new Image();
 let mollieImg = new Image();
+
 
 catImg.src = './cat.png';
 mollieImg.src = './mollie.png';
 mollieImg.onload = function() {
-  gameLoop();
+  gameLoop(currentTime);
 }
 
 window.addEventListener('keydown', keyDownListener, false);
@@ -58,74 +65,76 @@ function getIndex(num) {
   return num % 3;
 }
 
-function gameLoop() {
-  if (mollieX > 205) {
-    mollieX = 205;
-  }
-  if (mollieX < -10) {
-    mollieX = -10;
-  }
+function gameLoop(timestamp) {
+  currentTime = timestamp;
+  deltaTime = currentTime - previousTime;
 
-  frameCount++;
-  if (frameCount < 50) {
-    window.requestAnimationFrame(gameLoop);
-    return;
-  }
-  frameCount = 0;
+  if (deltaTime > interval) {
+    previousTime = currentTime - (deltaTime % interval);
 
-  if (keyPresses.a || keyPresses.A || keyPresses.ArrowLeft) {
-    mollieX -= MOLLIE_SPEED;
-    mollieRow = LEFT;
-    mollieBaseIndex = 1;
-  } else if (keyPresses.d || keyPresses.D || keyPresses.ArrowRight) {
-    mollieX += MOLLIE_SPEED;
-    mollieRow = RIGHT;
-    mollieBaseIndex = 1;
-  } else {
-    mollieBaseIndex = 0;
-  }
-
-  if ((keyPresses.p || keyPresses.P)
-     && CAT_X - mollieX < 100) {
-    if (prettyKittyMode && catMood > 7) {
-      catMoodMax = 9;
-      audio.play();
+    if (mollieX > 205) {
+      mollieX = 205;
     }
-    mollieRow = PET;
-    catMoodBase += 2;
-
-  } else {
-    mollieIndex == mollieBaseIndex 
-    ? mollieIndex = mollieBaseIndex + 1 
-    : mollieIndex = mollieBaseIndex;
-  }
-
-  catMoodBase > catMoodMax 
-  ? catMoodBase = catMoodMax 
-  : catMoodBase = catMoodBase;
+    if (mollieX < -10) {
+      mollieX = -10;
+    }
   
-  if (catMoodMax == 9) {
-    catMouthOpens++;
-    if (catMouthOpens > 8) {
-      catMouthOpens = 0;
-      catMoodMax = 8;
+    if (keyPresses.a || keyPresses.A || keyPresses.ArrowLeft) {
+      mollieX -= MOLLIE_SPEED;
+      mollieRow = LEFT;
+      mollieBaseIndex = 1;
+    } else if (keyPresses.d || keyPresses.D || keyPresses.ArrowRight) {
+      mollieX += MOLLIE_SPEED;
+      mollieRow = RIGHT;
+      mollieBaseIndex = 1;
+    } else {
+      mollieBaseIndex = 0;
     }
+  
+    if ((keyPresses.p || keyPresses.P)
+       && CAT_X - mollieX < 100) {
+      if (prettyKittyMode && catMood > 7) {
+        catMoodMax = 9;
+        audio.play();
+      }
+      mollieRow = PET;
+      catMoodBase += 2;
+  
+    } else {
+      mollieIndex == mollieBaseIndex 
+      ? mollieIndex = mollieBaseIndex + 1 
+      : mollieIndex = mollieBaseIndex;
+    }
+  
+    catMoodBase > catMoodMax 
+    ? catMoodBase = catMoodMax 
+    : catMoodBase = catMoodBase;
+    
+    if (catMoodMax == 9) {
+      catMouthOpens++;
+      if (catMouthOpens > 8) {
+        catMouthOpens = 0;
+        catMoodMax = 8;
+      }
+    }
+  
+    catMood++;
+    if (catMood > catMoodBase) catMood = catMoodBase - 1;
+  
+    mollieMood = catMood + 4;
+    if (mollieMood == 5) mollieMood += 1;
+    if (mollieMood >= 12) mollieMood -= 2;
+  
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (mollieRow == PET) {
+      drawImg(mollieImg, getIndex(mollieMood), getRow(mollieMood), 
+              mollieX, mollieY, MOLLIE_SCALE);
+    } else {
+      drawImg(mollieImg, mollieIndex, mollieRow, mollieX, mollieY, MOLLIE_SCALE);
+    }
+    drawImg(catImg, getIndex(catMood), getRow(catMood), CAT_X, CAT_Y, CAT_SCALE);
   }
 
-  catMood++;
-  if (catMood > catMoodBase) catMood = catMoodBase - 1;
-
-  mollieMood = catMood + 4;
-  if (mollieMood == 5) mollieMood += 1;
-  if (mollieMood >= 12) mollieMood -= 2;
-
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  if (mollieRow == PET) {
-    drawImg(mollieImg, getIndex(mollieMood), getRow(mollieMood), 
-            mollieX, mollieY, MOLLIE_SCALE);
-  } else {
-    drawImg(mollieImg, mollieIndex, mollieRow, mollieX, mollieY, MOLLIE_SCALE);
-  }
-  drawImg(catImg, getIndex(catMood), getRow(catMood), CAT_X, CAT_Y, CAT_SCALE);
   window.requestAnimationFrame(gameLoop);
 }
+window.requestAnimationFrame(gameLoop);
