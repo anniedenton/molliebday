@@ -14,7 +14,6 @@ let keyPresses = {};
 // !IMPORTANT!
 let prettyKittyMode = true;
 let audio = new Audio('prettykitty.m4a');
-let frameCount = 0;
 let catMood = 0;
 let catMoodBase = 1;
 let catMoodMax = 8;
