@@ -87,7 +87,7 @@ function gameLoop() {
 
   if ((keyPresses.p || keyPresses.P)
      && CAT_X - mollieX < 100) {
-    if (prettyKittyMode) {
+    if (prettyKittyMode && catMood > 7) {
       catMoodMax = 9;
       audio.play();
     }
@@ -106,7 +106,7 @@ function gameLoop() {
   
   if (catMoodMax == 9) {
     catMouthOpens++;
-    if (catMouthOpens > 5) {
+    if (catMouthOpens > 8) {
       catMouthOpens = 0;
       catMoodMax = 8;
     }
