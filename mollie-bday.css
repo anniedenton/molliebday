@@ -1,0 +1,27 @@
+* {
+  text-align:center;
+  font-family:'Silkscreen';
+}
+canvas {
+  background: #a5ebb1;
+  padding-left: 0;
+  padding-right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  width: 600px;
+}
+button {
+  display: block;
+}
+
+.silkscreen-regular {
+  font-family: "Silkscreen", sans-serif;
+  font-weight: 400;
+  font-style: normal; 
+}
+.silkscreen-bold {
+  font-family: "Silkscreen", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
